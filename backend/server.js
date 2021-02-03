@@ -1,9 +1,11 @@
 const express = require('express');
-const server = require('http');
+const http = require('http');
 const socketio = require('socket.io');
 
+const PORT = 3000;
 const app = express();
-const io = socketio(server.createServer(app));
+const server = http.createServer(app);
+const io = socketio(server);
 
 app.get('/', (req, res) => {
     res.sendFile(__dirname + '/fe.html');
@@ -12,9 +14,15 @@ app.get('/', (req, res) => {
 // console.log(io);
 io.on('connection', socket => {
     console.log("New connection made");
-    io.on('disconnect', ()=> {
+    socket.on('disconnect', ()=> {
         console.log('Disconnected');
     });
+
+    socket.on('message', (msg)=>{
+        console.log(msg);
+    })
 });
 
-app.listen(3000);
+server.listen(PORT, ()=> {
+    console.log("Listening on port ", PORT)
+});
